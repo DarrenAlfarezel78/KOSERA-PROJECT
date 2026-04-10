@@ -1,12 +1,23 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "blub";
-$db   = "jasa_kos"; // Pastikan sudah buat database ini di phpMyAdmin
+// Konfigurasi Database (KISS: semua config di 1 file)
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', 'blub');
+define('DB_NAME', 'kosera_db');
 
-$conn = mysqli_connect($host, $user, $pass, $db);
+// Fungsi koneksi (simple function)
+function getConnection() {
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    
+    if ($conn->connect_error) {
+        die("Koneksi gagal: " . $conn->connect_error);
+    }
+    
+    return $conn;
+}
 
-if (!$conn) {
-    die("Koneksi ke database gagal: " . mysqli_connect_error());
+// Auto close connection saat script selesai
+function closeConnection($conn) {
+    $conn->close();
 }
 ?>
