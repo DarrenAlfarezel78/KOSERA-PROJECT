@@ -104,17 +104,17 @@ if (!empty($errors)) {
 if ($id > 0) {
     if ($imageData !== null && $certificateData !== null) {
         $stmt = $conn->prepare('UPDATE services SET category_id = ?, sub_category_id = ?, title = ?, description = ?, price = ?, provider_name = ?, image = ?, certificate = ? WHERE id = ?');
-        $stmt->bind_param('iissdsbbi', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData, $certificateData, $id);
+        $stmt->bind_param('iissdsssi', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData, $certificateData, $id);
         $stmt->execute();
         $stmt->close();
     } elseif ($imageData !== null) {
         $stmt = $conn->prepare('UPDATE services SET category_id = ?, sub_category_id = ?, title = ?, description = ?, price = ?, provider_name = ?, image = ? WHERE id = ?');
-        $stmt->bind_param('iissdsbi', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData, $id);
+        $stmt->bind_param('iissdssi', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData, $id);
         $stmt->execute();
         $stmt->close();
     } elseif ($certificateData !== null) {
         $stmt = $conn->prepare('UPDATE services SET category_id = ?, sub_category_id = ?, title = ?, description = ?, price = ?, provider_name = ?, certificate = ? WHERE id = ?');
-        $stmt->bind_param('iissdsbi', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $certificateData, $id);
+        $stmt->bind_param('iissdssi', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $certificateData, $id);
         $stmt->execute();
         $stmt->close();
     } else {
@@ -131,13 +131,13 @@ if ($id > 0) {
 
 if ($imageData !== null && $certificateData !== null) {
     $stmt = $conn->prepare('INSERT INTO services (category_id, sub_category_id, title, description, price, provider_name, image, certificate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->bind_param('iissdsbb', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData, $certificateData);
+    $stmt->bind_param('iissdsss', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData, $certificateData);
 } elseif ($imageData !== null) {
     $stmt = $conn->prepare('INSERT INTO services (category_id, sub_category_id, title, description, price, provider_name, image) VALUES (?, ?, ?, ?, ?, ?, ?)');
-    $stmt->bind_param('iissdssb', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData);
+    $stmt->bind_param('iissdss', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $imageData);
 } elseif ($certificateData !== null) {
     $stmt = $conn->prepare('INSERT INTO services (category_id, sub_category_id, title, description, price, provider_name, certificate) VALUES (?, ?, ?, ?, ?, ?, ?)');
-    $stmt->bind_param('iissdsb', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $certificateData);
+    $stmt->bind_param('iissdss', $categoryId, $subCategoryId, $title, $description, $price, $providerName, $certificateData);
 } else {
     $stmt = $conn->prepare('INSERT INTO services (category_id, sub_category_id, title, description, price, provider_name) VALUES (?, ?, ?, ?, ?, ?)');
     $stmt->bind_param('iissds', $categoryId, $subCategoryId, $title, $description, $price, $providerName);
