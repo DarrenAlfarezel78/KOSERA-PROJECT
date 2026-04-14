@@ -1,15 +1,10 @@
 <?php
-/**
- * Script untuk menambahkan gambar ke layanan dari URL
- */
-
 require_once __DIR__ . '/config/database.php';
 
 $conn = getConnection();
 $message = '';
 $success = false;
 
-// Proses form POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $serviceId = isset($_POST['service_id']) ? (int)$_POST['service_id'] : 0;
     $imageUrl = trim($_POST['image_url'] ?? '');
@@ -20,16 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!in_array($type, ['image', 'certificate'], true)) {
         $message = 'Jenis gambar tidak valid.';
     } else {
-        // Verify service exists
         $checkStmt = $conn->prepare('SELECT id FROM services WHERE id = ?');
         $checkStmt->bind_param('i', $serviceId);
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result();
-        
+
         if ($checkResult->num_rows === 0) {
             $message = 'Layanan tidak ditemukan.';
         } else {
-            // Download image
             $imageData = @file_get_contents($imageUrl, false, stream_context_create([
                 'http' => ['timeout' => 10],
                 'https' => ['timeout' => 10],
@@ -38,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($imageData === false) {
                 $message = 'Gagal mengunduh gambar. Pastikan URL valid.';
             } else {
-                // Validate image
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mimeType = finfo_buffer($finfo, $imageData);
                 finfo_close($finfo);
@@ -48,11 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif (strlen($imageData) > 2 * 1024 * 1024) {
                     $message = 'Ukuran file terlalu besar (max 2MB).';
                 } else {
-                    // Update database
                     $column = $type === 'image' ? 'image' : 'certificate';
                     $updateStmt = $conn->prepare("UPDATE services SET $column = ? WHERE id = ?");
                     $updateStmt->bind_param('si', $imageData, $serviceId);
-                    
+
                     if ($updateStmt->execute()) {
                         $message = 'Gambar berhasil ditambahkan!';
                         $success = true;
@@ -67,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get services list
 $serviceOptions = '';
 $result = $conn->query('SELECT id, title, provider_name FROM services ORDER BY title ASC');
 while ($row = $result->fetch_assoc()) {
@@ -184,6 +174,7 @@ $conn->close();
         .btn-secondary {
             background: #e5e7eb;
             color: #0f172a;
+            text-decoration: none;
         }
         
         .btn-secondary:hover {
@@ -215,13 +206,13 @@ $conn->close();
     <div class="modal-box">
         <h2>Tambah Gambar Layanan</h2>
         <div class="subtitle">Gunakan URL dari stock photo open source</div>
-        
+
         <?php if (!empty($message)): ?>
             <div class="message <?php echo $success ? 'success' : 'error'; ?>">
                 <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
-        
+
         <form method="POST">
             <div class="form-group">
                 <label for="service_id">Pilih Layanan</label>
@@ -230,14 +221,14 @@ $conn->close();
                     <?php echo $serviceOptions; ?>
                 </select>
             </div>
-            
+
             <div class="form-group">
                 <label for="image_url">URL Gambar</label>
                 <input type="text" id="image_url" name="image_url" placeholder="https://source.unsplash.com/600x400?ac repair" required>
                 <small>Unsplash: https://source.unsplash.com/600x400?keyword</small>
                 <small>Picsum: https://picsum.photos/600/400</small>
             </div>
-            
+
             <div class="form-group">
                 <label for="type">Jenis Gambar</label>
                 <select id="type" name="type" required>
@@ -245,7 +236,7 @@ $conn->close();
                     <option value="certificate">Sertifikat</option>
                 </select>
             </div>
-            
+
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Tambahkan</button>
                 <a href="index.php" class="btn btn-secondary">Batal</a>
