@@ -61,7 +61,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
     <div class="container">
         <div class="topbar">
             <a class="brand" href="index.php">
-                <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="KOSERA">
+                <img src="<?php echo assetPath('assets/logo.png'); ?>" alt="KOSERA">
                 <div class="brand-copy">
                     <strong>KOSERA</strong>
                     <span>Sahabat Bantuan Anak Kos</span>

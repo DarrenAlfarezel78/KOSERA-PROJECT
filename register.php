@@ -96,7 +96,7 @@ $conn->close();
 <main class="auth-page-split">
     <section class="auth-visual auth-visual-register">
         <a class="auth-brand auth-brand-small" href="index.php">
-            <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="KOSERA">
+            <img src="<?php echo assetPath('assets/logo.png'); ?>" alt="KOSERA">
         </a>
 
         <div class="auth-visual-copy auth-visual-copy-register">

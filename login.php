@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $redirectTarget = safeRedirectTarget($_POST['redirect'] ?? 'index.php');
 
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Email harus valid.';
+        $error = 'Emazil harus valid.';
     } elseif ($password === '') {
         $error = 'Kata sandi wajib diisi.';
     } else {
@@ -81,7 +81,7 @@ $conn->close();
 <main class="auth-page-center">
     <div class="auth-login-card">
         <div class="auth-login-brand">
-            <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="KOSERA">
+            <img src="<?php echo assetPath('assets/logo.png'); ?>" alt="KOSERA">
         </div>
 
         <div class="auth-card-head auth-card-head-center">

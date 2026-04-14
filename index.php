@@ -67,7 +67,7 @@ if ($flashSuccess !== '') {
     <div class="container">
         <div class="simple-topbar">
             <a class="brand" href="index.php">
-                <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="KOSERA">
+                <img src="<?php echo assetPath('assets/logo.png'); ?>" alt="KOSERA">
             </a>
 
             <div class="nav-actions">
