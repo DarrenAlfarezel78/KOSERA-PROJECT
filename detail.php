@@ -12,7 +12,7 @@ $conn = getConnection();
 $user = currentUser();
 
 $stmt = $conn->prepare('
-    SELECT s.id, s.title, s.description, s.price, s.provider_name, s.image, s.certificate, s.created_at,
+    SELECT s.id, s.title, s.description, s.price, s.provider_name, s.image, s.certificate, s.created_at, s.updated_at,
            c.name AS category_name, sc.name AS sub_category_name
     FROM services s
     INNER JOIN categories c ON c.id = s.category_id
@@ -79,7 +79,7 @@ $conn->close();
     <div class="detail-layout">
         <div class="detail-media">
             <?php if (!empty($service['image'])): ?>
-                <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=image" alt="<?php echo htmlspecialchars($service['title']); ?>" style="min-height: 320px;">
+                <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=image&v=<?php echo urlencode((string) $service['updated_at']); ?>" alt="<?php echo htmlspecialchars($service['title']); ?>" style="min-height: 320px;">
             <?php else: ?>
                 <div class="panel" style="min-height: 320px; display: flex; align-items: center; justify-content: center; margin: 0; box-shadow: none; border: 0;">
                     <span style="color: #64748b;">Belum ada cover gambar.</span>
@@ -104,7 +104,7 @@ $conn->close();
                 <h3>Sertifikat</h3>
                 <div class="detail-spotlight" style="height: 280px;">
                     <?php if (!empty($service['certificate'])): ?>
-                        <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=certificate" alt="Sertifikat">
+                        <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=certificate&v=<?php echo urlencode((string) $service['updated_at']); ?>" alt="Sertifikat">
                     <?php else: ?>
                         <div class="panel" style="height: 100%; display: flex; align-items: center; justify-content: center; margin: 0; box-shadow: none; border: 0;">
                             <span style="color: #64748b;">Belum ada sertifikat yang diunggah.</span>

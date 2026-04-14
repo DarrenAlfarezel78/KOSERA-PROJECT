@@ -51,28 +51,86 @@ $imageData = null;
 $certificateData = null;
 $maxFileSize = 2 * 1024 * 1024;
 
-if (isset($_FILES['image']) && $_FILES['image']['size'] > 0) {
-    if ($_FILES['image']['size'] > $maxFileSize) {
+function uploadErrorMessage(int $errorCode): string
+{
+    switch ($errorCode) {
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+            return 'Ukuran file melebihi batas upload server/form.';
+        case UPLOAD_ERR_PARTIAL:
+            return 'File terupload sebagian. Silakan coba lagi.';
+        case UPLOAD_ERR_NO_TMP_DIR:
+            return 'Folder temporary upload tidak ditemukan.';
+        case UPLOAD_ERR_CANT_WRITE:
+            return 'Gagal menulis file ke disk server.';
+        case UPLOAD_ERR_EXTENSION:
+            return 'Upload dihentikan oleh ekstensi PHP.';
+        default:
+            return 'Terjadi error upload file.';
+    }
+}
+
+function detectImageMime(string $tmpPath): ?string
+{
+    if (!is_readable($tmpPath)) {
+        return null;
+    }
+
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    if ($finfo === false) {
+        return null;
+    }
+
+    $mime = finfo_file($finfo, $tmpPath);
+    finfo_close($finfo);
+
+    if (!is_string($mime)) {
+        return null;
+    }
+
+    return $mime;
+}
+
+if (isset($_FILES['image'])) {
+    $imageError = (int) ($_FILES['image']['error'] ?? UPLOAD_ERR_NO_FILE);
+
+    if ($imageError !== UPLOAD_ERR_NO_FILE && $imageError !== UPLOAD_ERR_OK) {
+        $errors[] = 'Gagal upload gambar: ' . uploadErrorMessage($imageError);
+    } elseif ($imageError === UPLOAD_ERR_OK && (int) $_FILES['image']['size'] > 0) {
+        if ((int) $_FILES['image']['size'] > $maxFileSize) {
         $errors[] = 'Gambar logo/cover terlalu besar (max 2MB).';
-    } elseif (!in_array($_FILES['image']['type'], ['image/jpeg', 'image/png'], true)) {
-        $errors[] = 'Format gambar harus JPG atau PNG.';
-    } else {
-        $imageData = file_get_contents($_FILES['image']['tmp_name']);
-        if ($imageData === false) {
-            $errors[] = 'Gagal membaca file gambar.';
+        } else {
+            $imageMime = detectImageMime((string) $_FILES['image']['tmp_name']);
+            if (!in_array($imageMime, ['image/jpeg', 'image/png'], true)) {
+                $errors[] = 'Format gambar harus JPG atau PNG.';
+            } else {
+                $imageData = file_get_contents($_FILES['image']['tmp_name']);
+                if ($imageData === false || $imageData === '') {
+                    $errors[] = 'Gagal membaca file gambar.';
+                }
+            }
         }
     }
 }
 
-if (isset($_FILES['certificate']) && $_FILES['certificate']['size'] > 0) {
-    if ($_FILES['certificate']['size'] > $maxFileSize) {
+if (isset($_FILES['certificate'])) {
+    $certificateError = (int) ($_FILES['certificate']['error'] ?? UPLOAD_ERR_NO_FILE);
+
+    if ($certificateError !== UPLOAD_ERR_NO_FILE && $certificateError !== UPLOAD_ERR_OK) {
+        $errors[] = 'Gagal upload sertifikat: ' . uploadErrorMessage($certificateError);
+    } elseif ($certificateError === UPLOAD_ERR_OK && (int) $_FILES['certificate']['size'] > 0) {
+        if ((int) $_FILES['certificate']['size'] > $maxFileSize) {
         $errors[] = 'Gambar sertifikat terlalu besar (max 2MB).';
-    } elseif (!in_array($_FILES['certificate']['type'], ['image/jpeg', 'image/png'], true)) {
-        $errors[] = 'Format sertifikat harus JPG atau PNG.';
-    } else {
-        $certificateData = file_get_contents($_FILES['certificate']['tmp_name']);
-        if ($certificateData === false) {
-            $errors[] = 'Gagal membaca file sertifikat.';
+        } else {
+            $certificateMime = detectImageMime((string) $_FILES['certificate']['tmp_name']);
+            if (!in_array($certificateMime, ['image/jpeg', 'image/png'], true)) {
+                $errors[] = 'Format sertifikat harus JPG atau PNG.';
+            } else {
+                $certificateData = file_get_contents($_FILES['certificate']['tmp_name']);
+                if ($certificateData === false || $certificateData === '') {
+                    $errors[] = 'Gagal membaca file sertifikat.';
+                }
+            }
         }
     }
 }

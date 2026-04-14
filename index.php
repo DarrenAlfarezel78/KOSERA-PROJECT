@@ -19,6 +19,7 @@ while ($row = $catResult->fetch_assoc()) {
 
 $sql = "SELECT s.id, s.title, s.description, s.price, s.provider_name,
            s.image,
+           s.updated_at,
                c.id AS category_id, c.name AS category_name,
                sc.name AS sub_category_name
         FROM services s
@@ -124,7 +125,7 @@ if ($flashSuccess !== '') {
                             <td>
                                 <div class="table-image-wrap">
                                     <?php if (!empty($service['image'])): ?>
-                                        <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=image" alt="<?php echo htmlspecialchars($service['title']); ?>">
+                                        <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=image&v=<?php echo urlencode((string) $service['updated_at']); ?>" alt="<?php echo htmlspecialchars($service['title']); ?>">
                                     <?php else: ?>
                                         <span>Tidak ada gambar</span>
                                     <?php endif; ?>

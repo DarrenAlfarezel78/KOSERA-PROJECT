@@ -237,7 +237,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
     // Show existing images if in edit mode
     <?php if ($isEdit): ?>
         <?php
-        $stmt = $conn->prepare('SELECT id, image FROM services WHERE id = ?');
+        $stmt = $conn->prepare('SELECT id, image, updated_at FROM services WHERE id = ?');
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -245,14 +245,14 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
             $row = $result->fetch_assoc();
             if (!empty($row['image'])) {
                 echo "document.getElementById('imagePreviewContainer').style.display = 'block';";
-                echo "document.getElementById('imagePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=image';";
+                echo "document.getElementById('imagePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=image&v=" . rawurlencode((string) $row['updated_at']) . "';";
             }
         }
         $stmt->close();
         ?>
 
         <?php
-        $stmt = $conn->prepare('SELECT id, certificate FROM services WHERE id = ?');
+        $stmt = $conn->prepare('SELECT id, certificate, updated_at FROM services WHERE id = ?');
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -260,7 +260,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
             $row = $result->fetch_assoc();
             if (!empty($row['certificate'])) {
                 echo "document.getElementById('certificatePreviewContainer').style.display = 'block';";
-                echo "document.getElementById('certificatePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=certificate';";
+                echo "document.getElementById('certificatePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=certificate&v=" . rawurlencode((string) $row['updated_at']) . "';";
             }
         }
         $stmt->close();

@@ -57,7 +57,9 @@ foreach ($mimeTypes as $magic => $mime) {
 
 header('Content-Type: ' . $contentType);
 header('Content-Length: ' . strlen($imageData));
-header('Cache-Control: public, max-age=604800');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 echo $imageData;
 exit();
