@@ -99,10 +99,6 @@ $conn->close();
             <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="KOSERA">
         </a>
 
-        <div class="auth-register-illustration">
-            <img src="<?php echo assetPath('assets/Register.png'); ?>" alt="Register illustration">
-        </div>
-
         <div class="auth-visual-copy auth-visual-copy-register">
             <span class="eyebrow">Buat Akunmu</span>
         </div>

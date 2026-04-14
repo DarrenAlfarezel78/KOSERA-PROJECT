@@ -428,6 +428,25 @@ input[type="file"] {
     padding: 8px;
 }
 
+.image-preview-container {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(10, 126, 162, 0.2);
+}
+
+.image-preview {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    max-height: 250px;
+}
+
 small {
     display: block;
     color: #6b7280;
@@ -524,6 +543,62 @@ small {
 .btn-danger {
     background: #dc2626;
     color: #fff;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #6fb2ff 0%, #0a7ea2 100%);
+    color: white;
+    padding: 28px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.form-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.form-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+}
+
+.detail-header {
+    background: linear-gradient(135deg, #6fb2ff 0%, #0a7ea2 100%);
+    color: white;
+    padding: 28px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.detail-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.eyebrow-detail {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+}
+
+.detail-price {
+    text-align: right;
+}
+
+.detail-price strong {
+    display: block;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 4px;
 }
 
 .panel {
@@ -911,29 +986,18 @@ body.auth-page::after {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     color: #fff;
     overflow: hidden;
 }
 
+.auth-brand-small {
+    align-self: flex-start;
+    width: 100%;
+}
+
 .auth-brand-small img {
     width: min(160px, 100%);
-}
-
-.auth-register-illustration {
-    width: 100%;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0;
-}
-
-.auth-register-illustration img {
-    width: min(420px, 100%);
-    height: auto;
-    object-fit: contain;
-    display: block;
 }
 
 .auth-visual-copy-register {

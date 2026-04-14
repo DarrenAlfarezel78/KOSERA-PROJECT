@@ -62,25 +62,20 @@ $conn->close();
                 <?php endif; ?>
             </div>
         </div>
-
-        <div class="hero" style="margin-top: 24px; grid-template-columns: 1.05fr 0.95fr;">
-            <div class="hero-copy">
-                <span class="eyebrow">Detail Jasa</span>
-                <h1><?php echo htmlspecialchars($service['title']); ?></h1>
-                <p>Informasi lengkap mengenai jasa yang tersedia, termasuk gambar cover dan sertifikat bila ada.</p>
-            </div>
-            <div class="hero-panel">
-                <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="Logo KOSERA">
-                <div class="stat-card">
-                    <strong>Rp <?php echo number_format((float) $service['price'], 0, ',', '.'); ?></strong>
-                    <span>Harga layanan</span>
-                </div>
-            </div>
-        </div>
     </div>
 </header>
 
 <main class="container">
+    <div class="detail-header">
+        <div>
+            <span class="eyebrow-detail"><?php echo htmlspecialchars($service['category_name']); ?></span>
+            <h1><?php echo htmlspecialchars($service['title']); ?></h1>
+        </div>
+        <div class="detail-price">
+            <strong>Rp <?php echo number_format((float) $service['price'], 0, ',', '.'); ?></strong>
+        </div>
+    </div>
+
     <div class="detail-layout">
         <div class="detail-media">
             <?php if (!empty($service['image'])): ?>
@@ -93,18 +88,15 @@ $conn->close();
         </div>
 
         <div class="panel detail-meta">
-            <span class="badge"><?php echo htmlspecialchars($service['category_name']); ?> - <?php echo htmlspecialchars($service['sub_category_name']); ?></span>
-            <h2><?php echo htmlspecialchars($service['title']); ?></h2>
             <p><?php echo nl2br(htmlspecialchars($service['description'])); ?></p>
 
             <div class="detail-grid">
                 <div>
                     <p><strong>Mitra Penyedia:</strong><br><?php echo htmlspecialchars($service['provider_name']); ?></p>
-                    <p><strong>Harga:</strong><br><span class="price">Rp <?php echo number_format((float) $service['price'], 0, ',', '.'); ?></span></p>
+                    <p><strong>Kategori:</strong><br><?php echo htmlspecialchars($service['category_name']); ?> - <?php echo htmlspecialchars($service['sub_category_name']); ?></p>
                 </div>
                 <div>
                     <p><strong>Tanggal Ditambahkan:</strong><br><?php echo date('d/m/Y H:i', strtotime($service['created_at'])); ?></p>
-                    <p><strong>Warna Brand:</strong><br>Teal / biru KOSERA</p>
                 </div>
             </div>
 

@@ -74,25 +74,15 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
                 <a class="btn btn-secondary" href="logout.php">Keluar</a>
             </div>
         </div>
-
-        <div class="hero" style="margin-top: 24px; grid-template-columns: 1.2fr 0.8fr;">
-            <div class="hero-copy">
-                <span class="eyebrow"><?php echo $isEdit ? 'Edit Jasa Mitra' : 'Tambah Jasa Mitra'; ?></span>
-                <h1>Lengkapi data jasa dengan rapi dan konsisten.</h1>
-                <p>Form ini tetap memakai warna brand KOSERA dan hanya bisa diakses setelah login.</p>
-            </div>
-            <div class="hero-panel">
-                <img src="<?php echo assetPath('assets/image 4 (2) 2.png'); ?>" alt="Logo KOSERA">
-                <div class="stat-card">
-                    <strong><?php echo $isEdit ? 'Edit Mode' : 'Buat Baru'; ?></strong>
-                    <span>Mode formulir</span>
-                </div>
-            </div>
-        </div>
     </div>
 </header>
 
 <main class="container">
+    <div class="form-header">
+        <h1><?php echo $isEdit ? 'Edit Jasa Mitra' : 'Tambah Jasa Mitra'; ?></h1>
+        <p>Lengkapi data jasa dengan rapi dan konsisten.</p>
+    </div>
+
     <?php if ($error !== ''): ?>
         <div class="error-box"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
@@ -156,6 +146,9 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
                     <label for="image">Logo/Cover Jasa (JPG/PNG, max 2MB)</label>
                     <input type="file" id="image" name="image" accept="image/jpeg,image/png">
                     <small>Upload gambar untuk ditampilkan di homepage.</small>
+                    <div class="image-preview-container" id="imagePreviewContainer" style="display: none; margin-top: 10px;">
+                        <img id="imagePreview" src="" alt="Preview" class="image-preview">
+                    </div>
                     <div class="field-error" id="err-image"></div>
                 </div>
 
@@ -163,6 +156,9 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
                     <label for="certificate">Foto Sertifikat (JPG/PNG, max 2MB)</label>
                     <input type="file" id="certificate" name="certificate" accept="image/jpeg,image/png">
                     <small>Upload sertifikat untuk ditampilkan di halaman detail.</small>
+                    <div class="image-preview-container" id="certificatePreviewContainer" style="display: none; margin-top: 10px;">
+                        <img id="certificatePreview" src="" alt="Preview" class="image-preview">
+                    </div>
                     <div class="field-error" id="err-certificate"></div>
                 </div>
             </div>
@@ -199,6 +195,77 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
 
     document.getElementById('category_id').addEventListener('change', syncSubCategoryByCategory);
     syncSubCategoryByCategory();
+
+    // Image preview functionality
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                imagePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreviewContainer.style.display = 'none';
+        }
+    });
+
+    // Certificate preview functionality
+    const certificateInput = document.getElementById('certificate');
+    const certificatePreview = document.getElementById('certificatePreview');
+    const certificatePreviewContainer = document.getElementById('certificatePreviewContainer');
+
+    certificateInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                certificatePreview.src = event.target.result;
+                certificatePreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            certificatePreviewContainer.style.display = 'none';
+        }
+    });
+
+    // Show existing images if in edit mode
+    <?php if ($isEdit): ?>
+        <?php
+        $stmt = $conn->prepare('SELECT id, image FROM services WHERE id = ?');
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
+            if (!empty($row['image'])) {
+                echo "document.getElementById('imagePreviewContainer').style.display = 'block';";
+                echo "document.getElementById('imagePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=image';";
+            }
+        }
+        $stmt->close();
+        ?>
+
+        <?php
+        $stmt = $conn->prepare('SELECT id, certificate FROM services WHERE id = ?');
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
+            if (!empty($row['certificate'])) {
+                echo "document.getElementById('certificatePreviewContainer').style.display = 'block';";
+                echo "document.getElementById('certificatePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=certificate';";
+            }
+        }
+        $stmt->close();
+        ?>
+    <?php endif; ?>
 </script>
 </body>
 </html>
