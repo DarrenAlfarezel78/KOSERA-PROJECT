@@ -1,6 +1,6 @@
 # KOSERA MITRA
 
-Portfolio aplikasi layanan jasa untuk pengguna kos (anak kos) yang membutuhkan bantuan harian secara cepat, rapi, dan terstruktur.
+ aplikasi layanan jasa untuk pengguna kos (anak kos) yang membutuhkan bantuan harian secara cepat, rapi, dan terstruktur.
 
 ## Ringkasan Produk
 KOSERA MITRA adalah web app berbasis PHP Native + MySQL yang membantu pengguna kos menemukan dan mengelola jasa seperti perbaikan, kebersihan, dan antar jemput.
@@ -49,53 +49,344 @@ Fokus aplikasi:
 
 ## Cara Menjalankan di Localhost
 
-### 1. Prasyarat
+### Setup untuk Linux (Ubuntu/Debian dengan LAMP)
+
+#### 1. Prasyarat
 Pastikan sudah terpasang:
-1. PHP 8.x
-2. MySQL/MariaDB
-3. Apache (atau XAMPP/LAMP)
-
-### 2. Letakkan Proyek di Web Root
-Contoh pada Linux:
 ```bash
-/var/www/html/kosera-mitra
+sudo apt-get update
+sudo apt-get install apache2 mysql-server php php-mysql php-cli
 ```
 
-### 3. Buat dan Import Database
-Jalankan perintah:
+#### 2. Letakkan Proyek di Web Root
 ```bash
-mysql -u root -p < database.sql
+sudo cp -r kosera-mitra /var/www/html/
+sudo chown -R www-data:www-data /var/www/html/kosera-mitra
+sudo chmod -R 755 /var/www/html/kosera-mitra
 ```
 
-Catatan:
-Perintah di atas akan membuat database `kosera_db` otomatis sesuai isi file SQL.
+#### 3. Buat dan Import Database
+```bash
+sudo mysql -u root -p < /var/www/html/kosera-mitra/database.sql
+```
 
-### 4. Atur Konfigurasi Database
-Buka file `config/database.php`, lalu sesuaikan nilai berikut dengan environment lokal:
-1. `$DB_HOST`
-2. `$DB_USER`
-3. `$DB_PASS`
-4. `$DB_NAME`
+Jika tidak ada password root (setup default):
+```bash
+sudo mysql -u root < /var/www/html/kosera-mitra/database.sql
+```
 
-### 5. Jalankan Apache dan MySQL
-Pastikan service Apache dan MySQL aktif.
+#### 4. Atur Konfigurasi Database di `config/database.php`
+Sesuaikan dengan credential lokal Anda:
+```php
+$DB_HOST = 'localhost';
+$DB_USER = 'root';
+$DB_PASS = 'your_password';  // Sesuaikan dengan password MySQL Anda
+$DB_NAME = 'kosera_db';
+```
 
-### 6. Akses Aplikasi
+#### 5. Pastikan Apache dan MySQL Berjalan
+```bash
+sudo systemctl start apache2
+sudo systemctl start mysql
+sudo systemctl enable apache2
+sudo systemctl enable mysql
+```
+
+#### 6. Akses Aplikasi
 Buka browser:
 ```text
 http://localhost/kosera-mitra/login.php
 ```
 
-Jika belum punya akun, daftar melalui halaman register.
+---
+
+### Setup untuk Windows dengan XAMPP
+
+#### 1. Download dan Install XAMPP
+- Kunjungi https://www.apachefriends.org/
+- Download XAMPP for Windows (PHP 8.x)
+- Jalankan installer dan pilih komponen:
+  - ✅ Apache
+  - ✅ MySQL
+  - ✅ PHP
+  - ✅ phpMyAdmin (opsional, tapi memudahkan)
+
+#### 2. Letakkan Proyek di XAMPP htdocs
+- Ekstrak folder `kosera-mitra` ke: `C:\xampp\htdocs\kosera-mitra\`
+- Struktur folder akan seperti:
+  ```
+  C:\xampp\htdocs\kosera-mitra\
+  ├── index.php
+  ├── login.php
+  ├── register.php
+  ├── config/
+  ├── assets/
+  └── ...
+  ```
+
+#### 3. Mulai Apache dan MySQL dari XAMPP Control Panel
+- Buka XAMPP Control Panel (`C:\xampp\xampp-control.exe`)
+- Klik **Start** pada baris Apache
+- Klik **Start** pada baris MySQL
+- Tunggu sampai status menunjukkan "Running" (text berwarna hijau)
+
+#### 4. Buat Database via phpMyAdmin atau Command Line
+
+**Cara A: Menggunakan phpMyAdmin (Mudah)**
+- Buka browser: `http://localhost/phpmyadmin`
+- Login dengan user `root`, password kosong (default XAMPP)
+- Klik menu **Import** di bagian atas
+- Pilih file `database.sql` dari folder kosera-mitra
+- Klik **Go** untuk mengimport
+- Database `kosera_db` akan terbuat otomatis
+
+**Cara B: Command Line**
+- Buka Command Prompt (`cmd.exe`)
+- Arahkan ke folder XAMPP:
+  ```cmd
+  cd C:\xampp\mysql\bin
+  ```
+- Import database:
+  ```cmd
+  mysql -u root < C:\xampp\htdocs\kosera-mitra\database.sql
+  ```
+  (tanpa password, karena default XAMPP tidak ada password untuk root)
+
+#### 5. Atur Konfigurasi Database di `config/database.php`
+- Buka file: `C:\xampp\htdocs\kosera-mitra\config\database.php`
+- Sesuaikan konfigurasi (default XAMPP sudah tepat):
+  ```php
+  $DB_HOST = 'localhost';
+  $DB_USER = 'root';
+  $DB_PASS = '';  // XAMPP default: KOSONG (no password)
+  $DB_NAME = 'kosera_db';
+  ```
+
+#### 6. Verifikasi Setup
+- Buka browser dan akses: `http://localhost/kosera-mitra/login.php`
+- Jika halaman muncul, setup sudah berhasil ✅
+
+#### 7. Troubleshooting Windows XAMPP
+Jika ada error:
+
+**Error: "Connection refused"**
+- Pastikan Apache dan MySQL sudah di-start dari XAMPP Control Panel
+- Cek port 80 (Apache) dan 3306 (MySQL) tidak terpakai aplikasi lain
+
+**Error: "Access denied for user 'root'@'localhost'"**
+- Konfigurasi password di `config/database.php` tidak sesuai
+- Default XAMPP: user=`root`, password=`kosong` (string kosong, bukan null)
+
+**Error: "Database kosera_db not found"**
+- Database belum di-import dari `database.sql`
+- Gunakan phpMyAdmin atau command line untuk import (lihat Step 4)
+
+**Port 80 sudah terpakai**
+- Buka XAMPP Control Panel → Apache → Config → Apache (`httpd.conf`)
+- Ubah baris `Listen 80` menjadi port lain, misal `Listen 8080`
+- Akses dengan: `http://localhost:8080/kosera-mitra/login.php`
 
 ## Akun Uji
-Database awal menyertakan satu akun admin pada tabel `users`.
-Jika tidak mengetahui kata sandinya, lakukan registrasi akun baru dari halaman aplikasi.
+Database awal menyertakan satu akun admin pada tabel `users`:
+- **Email**: `admin@kosera.local`
+- **Password**: Periksa langsung dari database atau lakukan registrasi akun baru
 
-## Catatan Pengembangan
-1. Aplikasi menyimpan gambar dalam database (`LONGBLOB`).
-2. Hindari upload file berukuran besar agar performa tetap baik.
-3. Untuk produksi, disarankan memindahkan kredensial database ke environment variable.
+Jika tidak mengetahui password akun admin, Anda dapat langsung daftar akun baru melalui halaman register aplikasi tanpa batasan khusus.
 
-## Lisensi
-Portfolio pembelajaran dan pengembangan internal.
+## Fitur Tambahan: Populate Images dari URL
+
+Aplikasi mendukung penambahan gambar/sertifikat dari URL terbuka (contoh: Unsplash, Picsum Photos).
+
+### Cara Menggunakan
+1. Login ke aplikasi
+2. Akses tool: `http://localhost/kosera-mitra/populate_images.php` (Linux) atau `http://localhost/xampp/htdocs/kosera-mitra/populate_images.php` (Windows jika port berbeda)
+3. Pilih layanan dari dropdown
+4. Masukkan URL gambar (contoh: `https://picsum.photos/600/400`)
+5. Pilih tipe gambar: **Cover** atau **Sertifikat**
+6. Klik **Upload dari URL**
+7. Gambar akan otomatis diunduh dan disimpan ke database
+
+**Format URL yang didukung:**
+- Unsplash: `https://source.unsplash.com/600x400/?kategori`
+- Picsum Photos: `https://picsum.photos/600/400`
+- URL gambar online lainnya (JPG, PNG, WebP)
+
+## Database Schema
+
+### Tabel `users`
+```sql
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(15),
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Tabel `categories`
+```sql
+CREATE TABLE categories (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL
+);
+```
+
+### Tabel `sub_categories`
+```sql
+CREATE TABLE sub_categories (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  category_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+```
+
+### Tabel `services`
+```sql
+CREATE TABLE services (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  category_id INT NOT NULL,
+  sub_category_id INT NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  description TEXT,
+  price DECIMAL(12, 2),
+  provider_name VARCHAR(100),
+  image LONGBLOB,            -- Gambar cover (JPG/PNG, max 2MB)
+  certificate LONGBLOB,      -- Gambar sertifikat (JPG/PNG, max 2MB)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES categories(id),
+  FOREIGN KEY (sub_category_id) REFERENCES sub_categories(id)
+);
+```
+
+### Tabel `orderan`
+```sql
+CREATE TABLE orderan (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  service_id INT NOT NULL,
+  user_id INT,
+  status VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (service_id) REFERENCES services(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+```
+
+## Keamanan dan Best Practices
+
+### Implementasi Keamanan
+1. **Password Hashing**: Menggunakan `password_hash()` dengan algoritma bcrypt
+2. **Prepared Statements**: Semua query menggunakan prepared statements untuk mencegah SQL Injection
+3. **Session Protection**: Session-based authentication dengan middleware `requireLogin()`
+4. **File Validation**: Upload file divalidasi tipe MIME dan ukuran
+5. **URL Encode**: Filename di-encode untuk mencegah directory traversal
+6. **CORS/Same-Origin**: Apache default sudah melindungi
+
+### Rekomendasi untuk Produksi
+Sebelum deploy ke production:
+
+1. **Gunakan Environment Variables untuk Credentials**
+   ```php
+   // Ganti config/database.php
+   $DB_USER = $_ENV['DB_USER'] ?? 'root';
+   $DB_PASS = $_ENV['DB_PASS'] ?? '';
+   ```
+
+2. **Aktifkan HTTPS**
+   - Setup SSL certificate (Let's Encrypt gratis)
+   - Redirect HTTP ke HTTPS di Apache config
+
+3. **Konfigurasi PHP.ini**
+   ```ini
+   upload_max_filesize = 2M
+   post_max_size = 2M
+   max_execution_time = 30
+   display_errors = Off
+   log_errors = On
+   ```
+
+4. **Backup Database Berkala**
+   ```bash
+   mysqldump -u root -p kosera_db > backup.sql
+   ```
+
+5. **Monitor Log Files**
+   - Apache: `/var/log/apache2/error.log` (Linux)
+   - MySQL: `/var/log/mysql/error.log` (Linux)
+   - PHP: Configure di `php.ini`
+
+## Struktur File Lengkap
+
+```
+kosera-mitra/
+├── index.php                    # Dashboard - Daftar jasa + filter kategori
+├── login.php                    # Halaman login
+├── register.php                 # Halaman registrasi
+├── logout.php                   # Logout (redirect ke login)
+├── form_jasa.php                # Form tambah/edit jasa
+├── detail.php                   # Halaman detail jasa
+├── delete.php                   # Proses hapus jasa (backend)
+├── save_service.php             # Proses simpan/update jasa (backend)
+├── image.php                    # Serve gambar dari database LONGBLOB
+├── auth.php                     # Helper functions & middleware
+├── populate_images.php          # Tool import gambar dari URL
+├── config/
+│   └── database.php             # Konfigurasi koneksi MySQL
+├── assets/
+│   ├── logo.png                 # Logo brand KOSERA
+│   ├── css/
+│   │   └── style.css            # Stylesheet utama
+│   └── js/
+│       └── script.js            # JavaScript untuk interaksi
+├── database.sql                 # SQL dump untuk setup database
+└── README.md                    # File ini
+```
+
+## Troubleshooting
+
+### Error: "500 Internal Server Error"
+**Penyebab**: Error pada PHP script atau konfigurasi database salah
+**Solusi**:
+1. Cek error log Apache/PHP
+2. Verifikasi `config/database.php` sesuai dengan MySQL credentials
+3. Pastikan database `kosera_db` sudah dibuat
+4. Jalankan `php -l filename.php` untuk check syntax error
+
+### Error: "Database connection failed"
+**Penyebab**: MySQL tidak berjalan atau password salah
+**Solusi**:
+- Pastikan MySQL service aktif: `systemctl status mysql` (Linux) atau XAMPP Control Panel (Windows)
+- Update password di `config/database.php`
+
+### Error: "Call Stack" saat upload gambar
+**Penyebab**: Binding parameter tipe data salah untuk LONGBLOB
+**Solusi**: Gunakan tipe `'b'` (binary) di `bind_param()`, bukan `'s'` (string)
+
+### Gambar tidak muncul setelah upload
+**Penyebab**: File LONGBLOB tidak tersimpan dengan benar
+**Solusi**:
+1. Cek ukuran file (max 2MB)
+2. Cek tipe file (JPG/PNG)
+3. Jalankan query: `SELECT LENGTH(image) FROM services WHERE id = X;`
+4. Jika ukuran 0, ada error saat proses penyimpanan
+
+### Redirect loop di halaman login
+**Penyebab**: Session tidak berfungsi atau `requireLogin()` error
+**Solusi**:
+1. Clear browser cookies/cache
+2. Cek folder `tmp/` permission untuk session files
+3. Verifikasi `session_start()` sudah di-include di semua halaman
+
+## Support & Kontribusi
+
+Aplikasi ini dikembangkan untuk memudahkan pengguna kos mencari jasa berkualitas. 
+
+Jika ada bugs, feature requests, atau improvements:
+1. Test di environment lokal (LAMP/XAMPP)
+2. Dokumentasikan issue dengan detail
+3. Submit pull request dengan deskripsi perubahan
+
+
