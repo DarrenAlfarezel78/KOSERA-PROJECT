@@ -1,19 +1,11 @@
-function formatRupiah(value) {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
-    }).format(value);
-}
-
-function applyCategoryFilter() {
-    const filter = document.getElementById('categoryFilter');
-    const selected = filter ? filter.value : 'all';
+function applySearchFilter() {
+    const filter = document.getElementById('searchFilter');
+    const keyword = filter ? filter.value.trim().toLowerCase() : '';
     const rows = document.querySelectorAll('.service-row');
 
     rows.forEach((row) => {
-        const rowCategory = row.getAttribute('data-category-id');
-        const visible = selected === 'all' || selected === rowCategory;
+        const haystack = row.textContent.toLowerCase();
+        const visible = keyword === '' || haystack.includes(keyword);
         row.style.display = visible ? '' : 'none';
     });
 }

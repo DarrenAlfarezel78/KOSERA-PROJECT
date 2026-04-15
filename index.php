@@ -7,15 +7,8 @@ requireLogin();
 $conn = getConnection();
 $user = currentUser();
 
-$categoryFilter = isset($_GET['category_id']) ? (int) $_GET['category_id'] : 0;
 $flashSuccess = flashGet('success');
 $success = isset($_GET['success']) ? trim($_GET['success']) : '';
-
-$categories = [];
-$catResult = $conn->query('SELECT id, name FROM categories ORDER BY name ASC');
-while ($row = $catResult->fetch_assoc()) {
-    $categories[] = $row;
-}
 
 $sql = "SELECT s.id, s.title, s.description, s.price, s.provider_name,
            s.image,
@@ -25,21 +18,10 @@ $sql = "SELECT s.id, s.title, s.description, s.price, s.provider_name,
         FROM services s
         INNER JOIN categories c ON c.id = s.category_id
         INNER JOIN sub_categories sc ON sc.id = s.sub_category_id";
-$params = [];
-$types = '';
-
-if ($categoryFilter > 0) {
-    $sql .= ' WHERE s.category_id = ?';
-    $types = 'i';
-    $params[] = $categoryFilter;
-}
 
 $sql .= ' ORDER BY s.created_at DESC';
 
 $stmt = $conn->prepare($sql);
-if ($types !== '') {
-    $stmt->bind_param($types, ...$params);
-}
 $stmt->execute();
 $result = $stmt->get_result();
 $services = $result->fetch_all(MYSQLI_ASSOC);
@@ -86,18 +68,13 @@ if ($flashSuccess !== '') {
 
     <div class="toolbar">
         <div class="left">
-            <label for="categoryFilter">Filter Kategori:</label>
-            <select id="categoryFilter" name="category_id" onchange="applyCategoryFilter()">
-                <option value="all">Semua Kategori</option>
-                <?php foreach ($categories as $category): ?>
-                    <option
-                        value="<?php echo (int) $category['id']; ?>"
-                        <?php echo ($categoryFilter === (int) $category['id']) ? 'selected' : ''; ?>
-                    >
-                        <?php echo htmlspecialchars($category['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <label for="searchFilter">Cari Jasa:</label>
+            <input
+                type="search"
+                id="searchFilter"
+                placeholder="Cari judul, deskripsi, kategori, atau mitra..."
+                oninput="applySearchFilter()"
+            >
         </div>
         <div class="right">
             <a class="btn btn-primary" href="form_jasa.php">+ Tambah Jasa</a>
@@ -121,7 +98,7 @@ if ($flashSuccess !== '') {
                 </thead>
                 <tbody>
                     <?php foreach ($services as $service): ?>
-                        <tr class="service-row" data-category-id="<?php echo (int) $service['category_id']; ?>">
+                        <tr class="service-row">
                             <td>
                                 <div class="table-image-wrap">
                                     <?php if (!empty($service['image'])): ?>
@@ -159,7 +136,7 @@ if ($flashSuccess !== '') {
 
 <script src="assets/js/script.js"></script>
 <script>
-    applyCategoryFilter();
+    applySearchFilter();
 </script>
 </body>
 </html>
