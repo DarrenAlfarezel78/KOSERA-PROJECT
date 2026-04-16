@@ -99,7 +99,7 @@ if ($flashSuccess !== '') {
                 <tbody>
                     <?php foreach ($services as $service): ?>
                         <tr class="service-row">
-                            <td>
+                            <td data-label="Gambar">
                                 <div class="table-image-wrap">
                                     <?php if (!empty($service['image'])): ?>
                                         <img src="image.php?id=<?php echo (int) $service['id']; ?>&type=image&v=<?php echo urlencode((string) $service['updated_at']); ?>" alt="<?php echo htmlspecialchars($service['title']); ?>">
@@ -108,16 +108,16 @@ if ($flashSuccess !== '') {
                                     <?php endif; ?>
                                 </div>
                             </td>
-                            <td>
+                            <td data-label="Jasa">
                                 <a href="detail.php?id=<?php echo (int) $service['id']; ?>" class="service-link">
                                     <strong><?php echo htmlspecialchars($service['title']); ?></strong>
                                     <span><?php echo htmlspecialchars($service['description']); ?></span>
                                 </a>
                             </td>
-                            <td><?php echo htmlspecialchars($service['category_name']); ?><br><small><?php echo htmlspecialchars($service['sub_category_name']); ?></small></td>
-                            <td><?php echo htmlspecialchars($service['provider_name']); ?></td>
-                            <td class="price">Rp <?php echo number_format((float) $service['price'], 0, ',', '.'); ?></td>
-                            <td>
+                            <td data-label="Kategori"><?php echo htmlspecialchars($service['category_name']); ?><br><small><?php echo htmlspecialchars($service['sub_category_name']); ?></small></td>
+                            <td data-label="Mitra"><?php echo htmlspecialchars($service['provider_name']); ?></td>
+                            <td data-label="Harga" class="price">Rp <?php echo number_format((float) $service['price'], 0, ',', '.'); ?></td>
+                            <td data-label="Aksi">
                                 <div class="table-actions">
                                     <a class="btn btn-secondary" href="detail.php?id=<?php echo (int) $service['id']; ?>">Detail</a>
                                     <a class="btn btn-secondary" href="form_jasa.php?id=<?php echo (int) $service['id']; ?>">Edit</a>

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/error_handler.php';
+
 $DB_HOST = 'localhost';
 $DB_USER = 'root';
 $DB_PASS = 'H4p!zh4km4l';
