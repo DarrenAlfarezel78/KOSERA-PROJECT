@@ -193,24 +193,6 @@ Database awal menyertakan satu akun admin pada tabel `users`:
 
 Jika tidak mengetahui password akun admin, Anda dapat langsung daftar akun baru melalui halaman register aplikasi tanpa batasan khusus.
 
-## Fitur Tambahan: Populate Images dari URL
-
-Aplikasi mendukung penambahan gambar/sertifikat dari URL terbuka (contoh: Unsplash, Picsum Photos).
-
-### Cara Menggunakan
-1. Login ke aplikasi
-2. Akses tool: `http://localhost/kosera-mitra/populate_images.php` (Linux) atau `http://localhost/xampp/htdocs/kosera-mitra/populate_images.php` (Windows jika port berbeda)
-3. Pilih layanan dari dropdown
-4. Masukkan URL gambar (contoh: `https://picsum.photos/600/400`)
-5. Pilih tipe gambar: **Cover** atau **Sertifikat**
-6. Klik **Upload dari URL**
-7. Gambar akan otomatis diunduh dan disimpan ke database
-
-**Format URL yang didukung:**
-- Unsplash: `https://source.unsplash.com/600x400/?kategori`
-- Picsum Photos: `https://picsum.photos/600/400`
-- URL gambar online lainnya (JPG, PNG, WebP)
-
 ## Database Schema
 
 ### Tabel `users`
@@ -332,7 +314,6 @@ kosera-mitra/
 ├── save_service.php             # Proses simpan/update jasa (backend)
 ├── image.php                    # Serve gambar dari database LONGBLOB
 ├── auth.php                     # Helper functions & middleware
-├── populate_images.php          # Tool import gambar dari URL
 ├── config/
 │   └── database.php             # Konfigurasi koneksi MySQL
 ├── assets/
