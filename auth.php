@@ -1,15 +1,64 @@
 <?php
 
 require_once __DIR__ . '/config/error_handler.php';
+require_once __DIR__ . '/app/Support/Session.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+appStartSession();
 
 function assetPath(string $path): string
 {
     $segments = array_map('rawurlencode', explode('/', ltrim($path, '/')));
     return implode('/', $segments);
+}
+
+function appBasePath(): string
+{
+    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+    $basePath = preg_replace('#/public$#', '', $scriptDir);
+
+    return rtrim((string) $basePath, '/');
+}
+
+function appUrl(string $path = ''): string
+{
+    $basePath = appBasePath();
+    $page = ltrim($path, '/');
+
+    if ($page === '') {
+        $page = 'services';
+    }
+
+    $query = '';
+    $route = $page;
+
+    $questionMark = strpos($page, '?');
+    if ($questionMark !== false) {
+        $route = substr($page, 0, $questionMark);
+        $query = substr($page, $questionMark + 1);
+    }
+
+    $url = ($basePath === '' ? '' : $basePath) . '/index.php?page=' . $route;
+    if ($query !== '') {
+        $url .= '&' . $query;
+    }
+
+    return $url;
+}
+
+function appRequestTarget(): string
+{
+    $page = trim((string) ($_GET['page'] ?? 'services'));
+
+    if ($page === '') {
+        $page = 'services';
+    }
+
+    $query = $_GET;
+    unset($query['page']);
+
+    $queryString = http_build_query($query);
+
+    return $queryString !== '' ? $page . '?' . $queryString : $page;
 }
 
 function isLoggedIn(): bool
@@ -22,7 +71,7 @@ function currentUser(): ?array
     return $_SESSION['user'] ?? null;
 }
 
-function safeRedirectTarget(string $target, string $default = 'index.php'): string
+function safeRedirectTarget(string $target, string $default = 'services'): string
 {
     $target = trim($target);
 
@@ -33,24 +82,24 @@ function safeRedirectTarget(string $target, string $default = 'index.php'): stri
     return ltrim($target, '/');
 }
 
-function requireLogin(string $loginPath = 'login.php'): void
+function requireLogin(string $loginPath = 'auth/login'): void
 {
     if (isLoggedIn()) {
         return;
     }
 
-    $redirectTarget = $_SERVER['REQUEST_URI'] ?? 'index.php';
-    header('Location: ' . $loginPath . '?redirect=' . urlencode($redirectTarget));
+    $redirectTarget = appRequestTarget();
+    header('Location: ' . appUrl($loginPath . '?redirect=' . urlencode($redirectTarget)));
     exit();
 }
 
-function redirectIfLoggedIn(string $target = 'index.php'): void
+function redirectIfLoggedIn(string $target = 'services'): void
 {
     if (!isLoggedIn()) {
         return;
     }
 
-    header('Location: ' . $target);
+    header('Location: ' . appUrl($target));
     exit();
 }
 

@@ -1,81 +1,8 @@
 <?php
-require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/config/database.php';
-
-requireLogin();
-
-$conn = getConnection();
-$user = currentUser();
-
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-$isEdit = $id > 0;
-
-$formData = [
-    'id' => 0,
-    'title' => '',
-    'description' => '',
-    'price' => '',
-    'provider_name' => '',
-    'category_id' => '',
-    'sub_category_id' => ''
-];
-
-if ($isEdit) {
-    $stmt = $conn->prepare('SELECT id, title, description, price, provider_name, category_id, sub_category_id FROM services WHERE id = ?');
-    $stmt->bind_param('i', $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows === 1) {
-        $formData = $result->fetch_assoc();
-    } else {
-        header('Location: index.php');
-        exit();
-    }
-    $stmt->close();
-}
-
-$categories = [];
-$catResult = $conn->query('SELECT id, name FROM categories ORDER BY name ASC');
-while ($row = $catResult->fetch_assoc()) {
-    $categories[] = $row;
-}
-
-$subCategories = [];
-$subResult = $conn->query('SELECT id, category_id, name FROM sub_categories ORDER BY name ASC');
-while ($row = $subResult->fetch_assoc()) {
-    $subCategories[] = $row;
-}
-
-$error = isset($_GET['error']) ? trim($_GET['error']) : '';
+$pageTitle = ($isEdit ? 'Edit Jasa' : 'Tambah Jasa') . ' - KOSERA';
+require __DIR__ . '/../partials/head.php';
+require __DIR__ . '/../partials/header-service.php';
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $isEdit ? 'Edit Jasa' : 'Tambah Jasa'; ?> - KOSERA</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-<header class="site-header">
-    <div class="container">
-        <div class="topbar">
-            <a class="brand" href="index.php">
-                <img src="<?php echo assetPath('assets/logo.png'); ?>" alt="KOSERA">
-                <div class="brand-copy">
-                    <strong>KOSERA</strong>
-                    <span>Sahabat Bantuan Anak Kos</span>
-                </div>
-            </a>
-
-            <div class="nav-actions">
-                <span class="badge">Halo, <?php echo htmlspecialchars($user['name']); ?></span>
-                <a class="btn btn-secondary" href="index.php">Kembali</a>
-                <a class="btn btn-secondary" href="logout.php">Keluar</a>
-            </div>
-        </div>
-    </div>
-</header>
 
 <main class="container">
     <div class="form-header">
@@ -88,7 +15,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
     <?php endif; ?>
 
     <div class="panel">
-        <form method="post" action="save_service.php" id="serviceForm" enctype="multipart/form-data" onsubmit="return validateServiceForm(this)">
+        <form method="post" action="<?php echo appUrl('services/store'); ?>" id="serviceForm" enctype="multipart/form-data" onsubmit="return validateServiceForm(this)">
             <input type="hidden" name="id" value="<?php echo (int) $formData['id']; ?>">
 
             <div class="form-grid">
@@ -165,7 +92,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary"><?php echo $isEdit ? 'Simpan Perubahan' : 'Simpan Jasa'; ?></button>
-                <a href="index.php" class="btn btn-secondary">Kembali</a>
+                <a href="<?php echo appUrl('services'); ?>" class="btn btn-secondary">Kembali</a>
             </div>
         </form>
     </div>
@@ -196,7 +123,6 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
     document.getElementById('category_id').addEventListener('change', syncSubCategoryByCategory);
     syncSubCategoryByCategory();
 
-    // Image preview functionality
     const imageInput = document.getElementById('image');
     const imagePreview = document.getElementById('imagePreview');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -215,7 +141,6 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
         }
     });
 
-    // Certificate preview functionality
     const certificateInput = document.getElementById('certificate');
     const certificatePreview = document.getElementById('certificatePreview');
     const certificatePreviewContainer = document.getElementById('certificatePreviewContainer');
@@ -234,40 +159,14 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
         }
     });
 
-    // Show existing images if in edit mode
-    <?php if ($isEdit): ?>
-        <?php
-        $stmt = $conn->prepare('SELECT id, image, updated_at FROM services WHERE id = ?');
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 1) {
-            $row = $result->fetch_assoc();
-            if (!empty($row['image'])) {
-                echo "document.getElementById('imagePreviewContainer').style.display = 'block';";
-                echo "document.getElementById('imagePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=image&v=" . rawurlencode((string) $row['updated_at']) . "';";
-            }
-        }
-        $stmt->close();
-        ?>
+    <?php if ($isEdit && !empty($formData['image'])): ?>
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+        document.getElementById('imagePreview').src = '<?php echo appUrl('services/image/' . (int) $formData['id'] . '/image?v=' . rawurlencode((string) $formData['updated_at'])); ?>';
+    <?php endif; ?>
 
-        <?php
-        $stmt = $conn->prepare('SELECT id, certificate, updated_at FROM services WHERE id = ?');
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 1) {
-            $row = $result->fetch_assoc();
-            if (!empty($row['certificate'])) {
-                echo "document.getElementById('certificatePreviewContainer').style.display = 'block';";
-                echo "document.getElementById('certificatePreview').src = 'image.php?id=" . (int)$row['id'] . "&type=certificate&v=" . rawurlencode((string) $row['updated_at']) . "';";
-            }
-        }
-        $stmt->close();
-        ?>
+    <?php if ($isEdit && !empty($formData['certificate'])): ?>
+        document.getElementById('certificatePreviewContainer').style.display = 'block';
+        document.getElementById('certificatePreview').src = '<?php echo appUrl('services/image/' . (int) $formData['id'] . '/certificate?v=' . rawurlencode((string) $formData['updated_at'])); ?>';
     <?php endif; ?>
 </script>
-</body>
-</html>
-<?php
-$conn->close();
+<?php require __DIR__ . '/../partials/end.php'; ?>

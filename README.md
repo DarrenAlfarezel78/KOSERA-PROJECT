@@ -38,12 +38,12 @@ Fokus aplikasi:
 4. Web Server: Apache (XAMPP/LAMP)
 
 ## Struktur Proyek Singkat
-1. `index.php`: daftar jasa + filter kategori.
-2. `login.php`, `register.php`, `logout.php`: autentikasi pengguna.
-3. `form_jasa.php`: form tambah/edit jasa.
-4. `save_service.php`: proses simpan data jasa.
-5. `detail.php`: detail jasa.
-6. `delete.php`: hapus jasa.
+1. `index.php`: front controller untuk semua halaman.
+2. `auth.php`: helper auth + flash + redirect.
+3. `app/Controllers/`: logika request untuk auth dan service.
+4. `app/Models/`: akses data untuk user dan service.
+5. `app/Views/`: template HTML untuk halaman, termasuk partial bersama.
+6. `app/Support/`: helper session dan view rendering.
 7. `config/database.php`: konfigurasi koneksi database.
 8. `database.sql`: skema tabel + data awal.
 
@@ -95,7 +95,7 @@ sudo systemctl enable mysql
 #### 6. Akses Aplikasi
 Buka browser:
 ```text
-http://localhost/kosera-mitra/login.php
+http://localhost/kosera-mitra/index.php?page=auth/login
 ```
 
 ---
@@ -117,8 +117,6 @@ http://localhost/kosera-mitra/login.php
   ```
   C:\xampp\htdocs\kosera-mitra\
   ├── index.php
-  ├── login.php
-  ├── register.php
   ├── config/
   ├── assets/
   └── ...
@@ -163,7 +161,7 @@ http://localhost/kosera-mitra/login.php
   ```
 
 #### 6. Verifikasi Setup
-- Buka browser dan akses: `http://localhost/kosera-mitra/login.php`
+- Buka browser dan akses: `http://localhost/kosera-mitra/index.php?page=auth/login`
 - Jika halaman muncul, setup sudah berhasil ✅
 
 #### 7. Troubleshooting Windows XAMPP
@@ -184,7 +182,7 @@ Jika ada error:
 **Port 80 sudah terpakai**
 - Buka XAMPP Control Panel → Apache → Config → Apache (`httpd.conf`)
 - Ubah baris `Listen 80` menjadi port lain, misal `Listen 8080`
-- Akses dengan: `http://localhost:8080/kosera-mitra/login.php`
+- Akses dengan: `http://localhost:8080/kosera-mitra/index.php?page=auth/login`
 
 ## Akun Uji
 Database awal menyertakan satu akun admin pada tabel `users`:
@@ -304,16 +302,31 @@ Sebelum deploy ke production:
 
 ```
 kosera-mitra/
-├── index.php                    # Dashboard - Daftar jasa + filter kategori
-├── login.php                    # Halaman login
-├── register.php                 # Halaman registrasi
-├── logout.php                   # Logout (redirect ke login)
-├── form_jasa.php                # Form tambah/edit jasa
-├── detail.php                   # Halaman detail jasa
-├── delete.php                   # Proses hapus jasa (backend)
-├── save_service.php             # Proses simpan/update jasa (backend)
-├── image.php                    # Serve gambar dari database LONGBLOB
+├── index.php                    # Front controller
 ├── auth.php                     # Helper functions & middleware
+├── app/
+│   ├── Controllers/
+│   │   ├── AuthController.php   # Controller login/register/logout
+│   │   └── ServiceController.php # Controller index/detail/form/save/delete/image
+│   ├── Models/
+│   │   ├── UserModel.php        # Query data user
+│   │   └── ServiceModel.php     # Query data layanan
+│   ├── Support/
+│   │   ├── Session.php          # Session initialization dan login/logout session flow
+│   │   └── View.php             # Helper render view
+│   └── Views/
+│       ├── auth/
+│       │   ├── login.php         # View login
+│       │   └── register.php      # View registrasi
+│       ├── services/
+│       │   ├── index.php         # View daftar jasa
+│       │   ├── detail.php        # View detail jasa
+│       │   └── form.php          # View form tambah/edit jasa
+│       └── partials/
+│           ├── head.php          # Pembuka dokumen HTML + link CSS
+│           ├── end.php           # Penutup dokumen HTML
+│           ├── header-home.php   # Header halaman daftar jasa
+│           └── header-service.php # Header halaman service
 ├── config/
 │   └── database.php             # Konfigurasi koneksi MySQL
 ├── assets/
