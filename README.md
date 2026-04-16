@@ -38,14 +38,13 @@ Fokus aplikasi:
 4. Web Server: Apache (XAMPP/LAMP)
 
 ## Struktur Proyek Singkat
-1. `index.php`: front controller untuk semua halaman.
-2. `auth.php`: helper auth + flash + redirect.
-3. `app/Controllers/`: logika request untuk auth dan service.
-4. `app/Models/`: akses data untuk user dan service.
-5. `app/Views/`: template HTML untuk halaman, termasuk partial bersama.
-6. `app/Support/`: helper session dan view rendering.
-7. `config/database.php`: konfigurasi koneksi database.
-8. `database.sql`: skema tabel + data awal.
+1. `index.php`: halaman utama daftar jasa.
+2. `login.php`, `register.php`, `logout.php`: autentikasi pengguna.
+3. `detail.php`, `form_jasa.php`, `save_service.php`, `delete.php`, `image.php`: manajemen data jasa.
+4. `auth.php`: helper session, auth, flash, dan redirect sederhana.
+5. `config/database.php`: konfigurasi koneksi database.
+6. `assets/`: aset UI dan JavaScript.
+7. `database.sql`: skema tabel + data awal.
 
 ## Cara Menjalankan di Localhost
 
@@ -95,7 +94,7 @@ sudo systemctl enable mysql
 #### 6. Akses Aplikasi
 Buka browser:
 ```text
-http://localhost/kosera-mitra/index.php?page=auth/login
+http://localhost/kosera-mitra/login.php
 ```
 
 ---
@@ -161,7 +160,7 @@ http://localhost/kosera-mitra/index.php?page=auth/login
   ```
 
 #### 6. Verifikasi Setup
-- Buka browser dan akses: `http://localhost/kosera-mitra/index.php?page=auth/login`
+- Buka browser dan akses: `http://localhost/kosera-mitra/login.php`
 - Jika halaman muncul, setup sudah berhasil ✅
 
 #### 7. Troubleshooting Windows XAMPP
@@ -182,7 +181,7 @@ Jika ada error:
 **Port 80 sudah terpakai**
 - Buka XAMPP Control Panel → Apache → Config → Apache (`httpd.conf`)
 - Ubah baris `Listen 80` menjadi port lain, misal `Listen 8080`
-- Akses dengan: `http://localhost:8080/kosera-mitra/index.php?page=auth/login`
+- Akses dengan: `http://localhost:8080/kosera-mitra/login.php`
 
 ## Akun Uji
 Database awal menyertakan satu akun admin pada tabel `users`:
@@ -302,41 +301,25 @@ Sebelum deploy ke production:
 
 ```
 kosera-mitra/
-├── index.php                    # Front controller
-├── auth.php                     # Helper functions & middleware
-├── app/
-│   ├── Controllers/
-│   │   ├── AuthController.php   # Controller login/register/logout
-│   │   └── ServiceController.php # Controller index/detail/form/save/delete/image
-│   ├── Models/
-│   │   ├── UserModel.php        # Query data user
-│   │   └── ServiceModel.php     # Query data layanan
-│   ├── Support/
-│   │   ├── Session.php          # Session initialization dan login/logout session flow
-│   │   └── View.php             # Helper render view
-│   └── Views/
-│       ├── auth/
-│       │   ├── login.php         # View login
-│       │   └── register.php      # View registrasi
-│       ├── services/
-│       │   ├── index.php         # View daftar jasa
-│       │   ├── detail.php        # View detail jasa
-│       │   └── form.php          # View form tambah/edit jasa
-│       └── partials/
-│           ├── head.php          # Pembuka dokumen HTML + link CSS
-│           ├── end.php           # Penutup dokumen HTML
-│           ├── header-home.php   # Header halaman daftar jasa
-│           └── header-service.php # Header halaman service
+├── index.php
+├── login.php
+├── register.php
+├── logout.php
+├── detail.php
+├── form_jasa.php
+├── save_service.php
+├── delete.php
+├── image.php
+├── auth.php
 ├── config/
-│   └── database.php             # Konfigurasi koneksi MySQL
+│   └── database.php
 ├── assets/
-│   ├── logo.png                 # Logo brand KOSERA
+│   ├── logo.png
 │   ├── css/
-│   │   └── style.css            # Stylesheet utama
 │   └── js/
-│       └── script.js            # JavaScript untuk interaksi
-├── database.sql                 # SQL dump untuk setup database
-└── README.md                    # File ini
+│       └── script.js
+├── database.sql
+└── README.md
 ```
 
 ## Troubleshooting

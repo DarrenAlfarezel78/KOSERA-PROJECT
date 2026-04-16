@@ -1,12 +1,55 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/app/Models/ServiceModel.php';
+
+if (!function_exists('uploadErrorMessage')) {
+    function uploadErrorMessage(int $errorCode): string
+    {
+        switch ($errorCode) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                return 'Ukuran file melebihi batas upload server/form.';
+            case UPLOAD_ERR_PARTIAL:
+                return 'File terupload sebagian. Silakan coba lagi.';
+            case UPLOAD_ERR_NO_TMP_DIR:
+                return 'Folder temporary upload tidak ditemukan.';
+            case UPLOAD_ERR_CANT_WRITE:
+                return 'Gagal menulis file ke disk server.';
+            case UPLOAD_ERR_EXTENSION:
+                return 'Upload dihentikan oleh ekstensi PHP.';
+            default:
+                return 'Terjadi error upload file.';
+        }
+    }
+}
+
+if (!function_exists('detectImageMime')) {
+    function detectImageMime(string $tmpPath): ?string
+    {
+        if (!is_readable($tmpPath)) {
+            return null;
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo === false) {
+            return null;
+        }
+
+        $mime = finfo_file($finfo, $tmpPath);
+        finfo_close($finfo);
+
+        if (!is_string($mime)) {
+            return null;
+        }
+
+        return $mime;
+    }
+}
 
 requireLogin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.php?page=services');
+    header('Location: index.php');
     exit();
 }
 
@@ -139,7 +182,7 @@ if ($id > 0) {
     $stmt->execute();
     $stmt->close();
     $conn->close();
-    header('Location: index.php?page=services&success=updated');
+    header('Location: index.php?success=updated');
     exit();
 }
 
@@ -160,5 +203,5 @@ $stmt->execute();
 $stmt->close();
 $conn->close();
 
-header('Location: index.php?page=services&success=created');
+header('Location: index.php?success=created');
 exit();

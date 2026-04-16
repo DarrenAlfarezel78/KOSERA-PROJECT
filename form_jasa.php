@@ -28,7 +28,7 @@ if ($isEdit) {
     if ($result->num_rows === 1) {
         $formData = $result->fetch_assoc();
     } else {
-        header('Location: index.php?page=services');
+        header('Location: index.php');
         exit();
     }
     $stmt->close();
@@ -72,7 +72,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
 <header class="border-b border-cyan-200 bg-white/85 backdrop-blur">
     <div class="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <a href="index.php?page=services" class="flex items-center gap-3">
+            <a href="index.php" class="flex items-center gap-3">
                 <img src="<?php echo assetPath('assets/logo.png'); ?>" alt="KOSERA" class="h-9 w-auto sm:h-10">
                 <div class="hidden sm:flex sm:flex-col">
                     <strong class="text-sm">KOSERA</strong>
@@ -82,7 +82,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
 
             <div class="flex items-center gap-2">
                 <span class="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-800 sm:text-sm">Halo, <?php echo htmlspecialchars($user['name']); ?></span>
-                <a href="index.php?page=services" class="inline-flex rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">Kembali</a>
+                <a href="index.php" class="inline-flex rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">Kembali</a>
                 <a href="logout.php" class="inline-flex rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">Keluar</a>
             </div>
         </div>
@@ -177,7 +177,7 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
 
             <div class="mt-5 flex flex-wrap gap-2">
                 <button type="submit" class="inline-flex rounded-xl bg-cyan-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-800"><?php echo $isEdit ? 'Simpan Perubahan' : 'Simpan Jasa'; ?></button>
-                <a href="index.php?page=services" class="inline-flex rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Kembali</a>
+                <a href="index.php" class="inline-flex rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Kembali</a>
             </div>
         </form>
     </div>
@@ -246,12 +246,12 @@ $error = isset($_GET['error']) ? trim($_GET['error']) : '';
 
     <?php if ($isEdit && !empty($formData['image'])): ?>
         document.getElementById('imagePreviewContainer').style.display = 'block';
-        document.getElementById('imagePreview').src = '<?php echo appUrl('services/image/' . (int) $formData['id'] . '/image?v=' . rawurlencode((string) $formData['updated_at'])); ?>';
+        document.getElementById('imagePreview').src = 'image.php?id=<?php echo (int) $formData['id']; ?>&type=image&v=<?php echo rawurlencode((string) $formData['updated_at']); ?>';
     <?php endif; ?>
 
     <?php if ($isEdit && !empty($formData['certificate'])): ?>
         document.getElementById('certificatePreviewContainer').style.display = 'block';
-        document.getElementById('certificatePreview').src = '<?php echo appUrl('services/image/' . (int) $formData['id'] . '/certificate?v=' . rawurlencode((string) $formData['updated_at'])); ?>';
+        document.getElementById('certificatePreview').src = 'image.php?id=<?php echo (int) $formData['id']; ?>&type=certificate&v=<?php echo rawurlencode((string) $formData['updated_at']); ?>';
     <?php endif; ?>
 </script>
 </body>
